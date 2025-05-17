@@ -4,6 +4,7 @@ Examples demonstrating the usage of the lazy_freeze decorator.
 """
 
 from lazy_freeze import lazy_freeze
+from lazy_freeze.lf_list import lf_list
 
 
 # Example 1: Regular class with attributes
@@ -442,6 +443,44 @@ def demonstrate_protected_attrs():
     p.description = "Principal Software Engineer"
     print(f"Modified description after hash: {p}")  # This should execute
 
+
+def demonstrate_lf_list():
+    """Demonstrate usage of lf_list (lazy-freeze list)."""
+    print("\n=== lf_list Example ===")
+
+    # Create and use lf_list
+    lst = lf_list([1, 2, 3])
+    lst.append(4)
+    print("After append:", lst)
+
+    # Hashing the list (freezes it)
+    h = hash(lst)
+    print("Hash:", h)
+
+    try:
+        lst.append(5)
+    except TypeError as e:
+        print("Error after hash:", e)
+
+    # Using lf_list as a dictionary key
+    my_dict = {lf_list([10, 20]): "value"}
+    print("Dictionary with lf_list as key:", my_dict)
+
+    # Debug mode: stack trace and unhashable check
+    try:
+        debug_lst = lf_list([1, 2], debug=True)
+        debug_lst.append({"a": 1})  # dict is unhashable
+    except TypeError as e:
+        print("Debug mode unhashable error:", e)
+
+    try:
+        debug_lst = lf_list([1, 2], debug=True)
+        hash(debug_lst)
+        debug_lst.append(3)
+    except TypeError as e:
+        print("Debug mode freeze error:", e)
+
+
 if __name__ == "__main__":
     demonstrate_person()
     demonstrate_dict()
@@ -452,3 +491,4 @@ if __name__ == "__main__":
     demonstrate_deletion()
     demonstrate_debug_mode()
     demonstrate_protected_attrs()  # New demo for protected attributes
+    demonstrate_lf_list()  # Demo for lf_list usage
